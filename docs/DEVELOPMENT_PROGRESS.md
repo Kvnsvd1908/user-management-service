@@ -16,7 +16,7 @@ Validada técnicamente. La primera captura mostró PostgreSQL, incompatible con 
 
 El servicio Docker Free está [Live en Render](https://users-management-api-wxx6.onrender.com) desde `main`. `Dockerfile` ejecuta `mvn clean verify` durante el build y el despliegue pasó 196 pruebas. Render generó `JWT_SECRET` y recibió la contraseña MySQL como variable privada, sin versionarla. Los logs confirman Tomcat en el puerto 10000 y conexión Hikari a Aiven. En la URL pública se comprobaron raíz 401, OpenAPI y Swagger 200, login ADMIN 200 y `GET /api/users` con JWT 200. La configuración está en [RENDER_SETUP.md](RENDER_SETUP.md).
 
-GitHub Actions verifica cada push o pull request a `main`; la ejecución del commit `9a7405b` terminó correctamente. Render usa `autoDeployTrigger: checksPass` para desplegar tras un check verde. Queda comprobar un segundo despliegue automático después de este cambio documental. GitHub aún indica que 2FA no está habilitada; el propietario debe completar el QR/TOTP y guardar los códigos de recuperación en privado.
+GitHub Actions verifica cada push o pull request a `main`. La ejecución del commit `deec07b` terminó correctamente y Render usó `autoDeployTrigger: checksPass` para desplegarlo automáticamente; el servicio volvió a quedar `Live` y pasó las cinco comprobaciones HTTP públicas. GitHub muestra el método 2FA **Authenticator app** como `Configured` y los códigos de recuperación como `Viewed`. La conservación privada de esos códigos queda a cargo del propietario.
 
 Render Free bloquea SMTP saliente en los puertos 25, 465 y 587; `NOTIFICATIONS_EMAIL_ENABLED=false` desactiva los intentos allí. La integración REST de Brevo corresponde a la Guía 5.
 
