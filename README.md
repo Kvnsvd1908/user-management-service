@@ -1,4 +1,6 @@
-# user-management-service`r`n`r`nBasado en [users-management-microservice](https://github.com/arrietajohn/users-management-microservice) de John Carlos Arrieta Arrieta; se conserva el historial original.
+# user-management-service
+
+Basado en [users-management-microservice](https://github.com/arrietajohn/users-management-microservice) de John Carlos Arrieta Arrieta; se conserva el historial original.
 
 Aplicación de gestión de usuarios construida con Java 17 y Spring Boot. La API REST es el punto de entrada activo. El código de la antigua CLI se conserva como adaptador inactivo y no posee un contenedor de dependencias independiente.
 
@@ -29,4 +31,5 @@ automático de cada commit que llegue a la rama `main`.
 
 Las credenciales nunca deben guardarse en `application.properties` ni en
 `render.yaml`. Para desarrollo local, deben proporcionarse como variables de entorno.
+
 
