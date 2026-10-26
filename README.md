@@ -1,35 +1,39 @@
-# user-management-service
+# User Management Service
 
-Basado en [users-management-microservice](https://github.com/arrietajohn/users-management-microservice) de John Carlos Arrieta Arrieta; se conserva el historial original.
+Microservicio REST de gestión de usuarios con Java 17, Spring Boot 3.3, Maven, JDBC/MySQL, Spring Security/JWT y OpenAPI. Sigue una arquitectura hexagonal: dominio y casos de uso separados de los adaptadores HTTP, persistencia y correo.
 
-Aplicación de gestión de usuarios construida con Java 17 y Spring Boot. La API REST es el punto de entrada activo. El código de la antigua CLI se conserva como adaptador inactivo y no posee un contenedor de dependencias independiente.
+Basado en [users-management-microservice](https://github.com/arrietajohn/users-management-microservice) de John Carlos Arrieta Arrieta; se conserva el historial original. La API REST es el punto de entrada activo; la CLI antigua permanece inactiva.
 
-Spring es el único *composition root*: `Main` inicia el contexto y las dependencias se resuelven mediante configuración y component scanning de Spring.
+## Requisitos
 
-## Verificación
+- Windows/PowerShell con JDK 17 configurado en `JAVA_HOME` y Docker Desktop activo.
+- Maven Wrapper incluido (`mvnw.cmd`); no hace falta instalar Maven globalmente.
+- VS Code con extensiones Java/Spring y REST Client si se quiere usar `docs/API_TESTING.http`.
 
-```bash
-./mvnw clean test
-./mvnw clean package
-```
+## Ejecutar en local
 
-En Windows se puede utilizar `mvnw.cmd`.
+1. Copiar `compose.env.example` a `.env` y reemplazar los valores de ejemplo con secretos aleatorios. `JWT_SECRET` debe ser Base64 de al menos 32 bytes. `.env` está ignorado por Git.
+2. En PowerShell, desde la raíz del repositorio:
 
-## Despliegue en Render
+   ```powershell
+   .\mvnw.cmd clean verify
+   .\scripts\Start-Local.ps1
+   ```
 
-El archivo `render.yaml` define el servicio web, el build con Docker y el despliegue
-automático de cada commit que llegue a la rama `main`.
+3. Abrir [Swagger UI](http://127.0.0.1:8080/swagger-ui/index.html) y [Mailpit](http://127.0.0.1:8025). El esquema `crud_usuarios.users` se inicializa al crear el volumen MySQL. El administrador de demostración se siembra solo en el entorno local; su clave figura en `schema-local-seed.sql` y debe cambiarse antes de compartir una instalación.
 
-1. Crear un Blueprint en Render y seleccionar este repositorio.
-2. Completar en el panel los secretos marcados como requeridos: `DB_HOST`,
-   `DB_USERNAME`, `DB_PASSWORD`, `SMTP_USERNAME`, `SMTP_PASSWORD` y
-   `SMTP_FROM_ADDRESS`.
-3. Usar una instancia MySQL accesible desde Internet o desde la red privada de
-   Render y ejecutar `src/main/resources/schema.sql` una vez para crear el esquema.
-4. Desplegar el Blueprint. La API quedará disponible en el subdominio
-   `onrender.com` asignado por Render y Swagger UI en `/swagger-ui.html`.
+Los servicios Docker están vinculados a `127.0.0.1`: MySQL 3306, Mailpit SMTP 1025 y UI 8025. Para detener solo la API, pulsa Ctrl+C. El volumen de MySQL conserva los datos entre reinicios.
 
-Las credenciales nunca deben guardarse en `application.properties` ni en
-`render.yaml`. Para desarrollo local, deben proporcionarse como variables de entorno.
+## MySQL remoto y despliegue
+
+La [preparación de Aiven](docs/AIVEN_SETUP.md) explica cómo crear MySQL Free, guardar la conexión en `.environments/aiven.env` y ejecutar `./scripts/Start-Aiven.ps1`. Para volver a local, detén la API remota y ejecuta `./scripts/Start-Local.ps1`.
+
+`render.yaml` prepara un servicio Docker en Render sobre `main`, con secretos configurados en el panel. La imagen ejecuta las pruebas antes de empaquetar. El despliegue y la conexión GitHub-Render no se han realizado; consulta [el avance](docs/DEVELOPMENT_PROGRESS.md) antes de continuar. En Render Free, SMTP saliente por 25/465/587 está bloqueado; la integración Brevo HTTPS se aborda más adelante.
+
+## API y estructura
+
+Swagger describe los métodos reales; [API_TESTING.http](docs/API_TESTING.http) ofrece peticiones de ejemplo con valores que deben reemplazarse localmente. El registro público admite únicamente el rol MEMBER y crea usuarios PENDING. Los endpoints de consulta/edición requieren JWT y los cambios administrativos exigen ADMIN.
+
+`src/main/java/.../domain` contiene el modelo, `application` los casos de uso y `infrastructure` los adaptadores. `src/main/resources/schema.sql` define la tabla, `compose.yaml` prepara el entorno local, `Dockerfile` construye la imagen y `docs/guias/` conserva los cinco PDF del curso.
 
 

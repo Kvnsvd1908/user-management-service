@@ -2,6 +2,7 @@ package com.jcaa.usersmanagement.infrastructure.entrypoint.rest.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record CreateUserRestRequest(
@@ -15,5 +16,7 @@ public record CreateUserRestRequest(
     @NotBlank(message = "password must not be blank")
         @Size(min = 8, message = "password must have at least 8 characters")
         String password,
-    @NotBlank(message = "role must not be blank") String role) {}
+    @NotBlank(message = "role must not be blank")
+        @Pattern(regexp = "MEMBER", message = "public registration can only create MEMBER users")
+        String role) {}
 

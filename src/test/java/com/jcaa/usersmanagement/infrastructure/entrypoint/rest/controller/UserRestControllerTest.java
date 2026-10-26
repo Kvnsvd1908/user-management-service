@@ -2,6 +2,7 @@ package com.jcaa.usersmanagement.infrastructure.entrypoint.rest.controller;
 
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -99,7 +100,7 @@ class UserRestControllerTest {
           "name": "Ada Lovelace",
           "email": "ada@example.com",
           "password": "Secure123!",
-          "role": "ADMIN"
+          "role": "MEMBER"
         }
         """.formatted(ID);
     final UserModel user =
@@ -108,16 +109,37 @@ class UserRestControllerTest {
             new UserName("Ada Lovelace"),
             new UserEmail("ada@example.com"),
             UserPassword.fromHash("$2a$12$abcdefghijklmnopqrstuuuuuuuuuuuuuuuuuuuuuuuuuuuuu"),
-            UserRole.ADMIN,
+            UserRole.MEMBER,
             UserStatus.ACTIVE);
     when(createUserUseCase.execute(
-            new CreateUserCommand(ID, "Ada Lovelace", "ada@example.com", "Secure123!", "ADMIN")))
+            new CreateUserCommand(ID, "Ada Lovelace", "ada@example.com", "Secure123!", "MEMBER")))
         .thenReturn(user);
 
     mockMvc
         .perform(post("/api/users").contentType(MediaType.APPLICATION_JSON).content(request))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id").value(ID));
+  }
+
+  @Test
+  @DisplayName("POST /api/users debe rechazar la creación pública de un ADMIN")
+  void shouldRejectPublicAdminRegistration() throws Exception {
+    final String request =
+        """
+        {
+          "id": "%s",
+          "name": "Ada Lovelace",
+          "email": "ada@example.com",
+          "password": "Secure123!",
+          "role": "ADMIN"
+        }
+        """.formatted(ID);
+
+    mockMvc
+        .perform(post("/api/users").contentType(MediaType.APPLICATION_JSON).content(request))
+        .andExpect(status().isBadRequest());
+
+    verifyNoInteractions(createUserUseCase);
   }
 
   @Test

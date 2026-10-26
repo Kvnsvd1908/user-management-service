@@ -1,0 +1,76 @@
+# Coleccion para la extension REST Client de VS Code.
+# Define adminPassword y token en la configuracion privada de VS Code o en una copia local ignorada.
+@baseUrl = http://127.0.0.1:8080
+@adminEmail = admin@example.com
+@adminPassword = REEMPLAZAR_LOCALMENTE
+@token = PEGAR_JWT_LOCALMENTE
+@userId = 11111111-1111-4111-8111-111111111111
+@userEmail = prueba-local@example.test
+@userPassword = CambiarEstaClave123!
+
+### Verificar OpenAPI
+GET {{baseUrl}}/v3/api-docs
+
+### Crear usuario publico: solo MEMBER; debe responder 201/PENDING
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "id": "{{userId}}",
+  "name": "Prueba Local",
+  "email": "{{userEmail}}",
+  "password": "{{userPassword}}",
+  "role": "MEMBER"
+}
+
+### Login de usuario PENDING: debe responder 401
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{userEmail}}",
+  "password": "{{userPassword}}"
+}
+
+### Login administrador local: copiar accessToken en token
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{adminEmail}}",
+  "password": "{{adminPassword}}"
+}
+
+### Listar: 200 con ADMIN o REVIEWER; 401 sin JWT
+GET {{baseUrl}}/api/users
+Authorization: Bearer {{token}}
+
+### Obtener por ID
+GET {{baseUrl}}/api/users/{{userId}}
+Authorization: Bearer {{token}}
+
+### Activar usuario: requiere ADMIN
+PUT {{baseUrl}}/api/users/{{userId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Prueba Local Activa",
+  "email": "{{userEmail}}",
+  "password": "",
+  "role": "MEMBER",
+  "status": "ACTIVE"
+}
+
+### Login de usuario ACTIVE: debe responder 200 con JWT
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{userEmail}}",
+  "password": "{{userPassword}}"
+}
+
+### Eliminar: requiere ADMIN, responde 204
+DELETE {{baseUrl}}/api/users/{{userId}}
+Authorization: Bearer {{token}}

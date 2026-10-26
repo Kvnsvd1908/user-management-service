@@ -49,7 +49,7 @@ class AsyncEmailNotificationServiceTest {
       try {
         assertTimeout(
             Duration.ofSeconds(1),
-            () -> service.notifyUserCreated(createUser(), "Secure123!"));
+            () -> service.notifyUserCreated(createUser()));
         assertTrue(sendingStarted.await(1, TimeUnit.SECONDS));
       } finally {
         allowSendingToFinish.countDown();

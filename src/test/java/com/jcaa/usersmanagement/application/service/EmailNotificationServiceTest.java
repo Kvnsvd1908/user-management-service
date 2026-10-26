@@ -45,7 +45,7 @@ class EmailNotificationServiceTest {
   private static final String NAME = "John Arrieta";
   private static final String PASSWORD = "SecurePass1";
   private static final String TEMPLATE_CONTENT =
-      "<html>{{name}} {{email}} {{password}} {{role}} {{status}}</html>";
+      "<html>{{name}} {{email}} {{role}} {{status}}</html>";
 
   private UserModel user;
 
@@ -70,7 +70,7 @@ class EmailNotificationServiceTest {
   @DisplayName("notifyUserCreated() invoca el puerto con el email y asunto correctos")
   void shouldSendCreatedNotificationToCorrectEmail() {
     // Act
-    service.notifyUserCreated(user, PASSWORD);
+    service.notifyUserCreated(user);
 
     // Assert
     verify(emailSenderPort)
@@ -109,7 +109,7 @@ class EmailNotificationServiceTest {
     doThrow(cause).when(emailSenderPort).send(any());
 
     // Act & Assert
-    assertThrows(EmailSenderException.class, () -> service.notifyUserCreated(user, PASSWORD));
+    assertThrows(EmailSenderException.class, () -> service.notifyUserCreated(user));
   }
 
   // ── re-lanzar EmailSenderException en notifyUserUpdated
@@ -136,7 +136,7 @@ class EmailNotificationServiceTest {
     doReturn(null).when(serviceSpy).openResourceStream(any());
 
     // Act & Assert
-    assertThrows(EmailSenderException.class, () -> serviceSpy.notifyUserCreated(user, PASSWORD));
+    assertThrows(EmailSenderException.class, () -> serviceSpy.notifyUserCreated(user));
   }
 
   // ── loadTemplate() — rama: IOException al leer el stream
@@ -151,7 +151,7 @@ class EmailNotificationServiceTest {
     doReturn(brokenStream).when(serviceSpy).openResourceStream(any());
 
     // Act & Assert
-    assertThrows(EmailSenderException.class, () -> serviceSpy.notifyUserCreated(user, PASSWORD));
+    assertThrows(EmailSenderException.class, () -> serviceSpy.notifyUserCreated(user));
   }
 
   // ── renderTemplate() — todos los tokens se sustituyen
@@ -165,10 +165,39 @@ class EmailNotificationServiceTest {
     doReturn(templateStream).when(serviceSpy).openResourceStream(any());
 
     // Act
-    serviceSpy.notifyUserCreated(user, PASSWORD);
+    serviceSpy.notifyUserCreated(user);
 
     // Assert — el body enviado contiene los valores interpolados
     verify(spyEmailSenderPort)
         .send(argThat(dest -> dest.getBody().contains(NAME) && dest.getBody().contains(EMAIL)));
+  }
+
+  @Test
+  @DisplayName("La notificacion de alta no incluye la contrasena")
+  void shouldNotIncludePasswordInCreatedNotification() {
+    service.notifyUserCreated(user);
+
+    verify(emailSenderPort)
+        .send(argThat(dest -> !dest.getBody().contains(PASSWORD)
+            && !dest.getBody().contains("Contraseña")));
+  }
+
+  @Test
+  @DisplayName("Los datos del usuario se escapan antes de insertarse en HTML")
+  void shouldEscapeUserNameInHtml() {
+    final UserModel unsafeName =
+        new UserModel(
+            new UserId("u-002"),
+            new UserName("<script>alert('x')</script>"),
+            new UserEmail(EMAIL),
+            UserPassword.fromPlainText(PASSWORD),
+            UserRole.MEMBER,
+            UserStatus.PENDING);
+
+    service.notifyUserCreated(unsafeName);
+
+    verify(emailSenderPort)
+        .send(argThat(dest -> dest.getBody().contains("&lt;script&gt;alert(&#39;x&#39;)&lt;/script&gt;")
+            && !dest.getBody().contains("<script>")));
   }
 }
