@@ -28,7 +28,7 @@ Los servicios Docker están vinculados a `127.0.0.1`: MySQL 3306, Mailpit SMTP 1
 
 La [configuración de Aiven](docs/AIVEN_SETUP.md) explica cómo guardar la conexión en `.environments/aiven.env`, inicializar el esquema con `./scripts/Initialize-Aiven.ps1` y ejecutar `./scripts/Start-Aiven.ps1`. La API y el CRUD ya se probaron contra MySQL remoto. Para volver a local, detén la API remota y ejecuta `./scripts/Start-Local.ps1`.
 
-`render.yaml` prepara un servicio Docker en Render sobre `main`, con secretos configurados en el panel. La imagen ejecuta las pruebas antes de empaquetar. El despliegue y la conexión GitHub-Render no se han realizado; consulta [el avance](docs/DEVELOPMENT_PROGRESS.md) antes de continuar. En Render Free, SMTP saliente por 25/465/587 está bloqueado; la integración Brevo HTTPS se aborda más adelante.
+El servicio está desplegado en [Render Free](https://users-management-api-wxx6.onrender.com) desde `main`. [Swagger UI](https://users-management-api-wxx6.onrender.com/swagger-ui/index.html) y la [configuración de Render](docs/RENDER_SETUP.md) explican cómo probarlo. GitHub Actions ejecuta las pruebas en cada push y Render despliega después de que pasen. En Render Free, SMTP saliente por 25/465/587 está bloqueado; `NOTIFICATIONS_EMAIL_ENABLED=false` evita intentos de envío allí. La integración Brevo HTTPS corresponde a la Guía 5.
 
 ## API y estructura
 
