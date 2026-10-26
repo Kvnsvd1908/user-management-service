@@ -10,7 +10,7 @@ Completada y validada en Windows con JDK 17, Maven Wrapper, Docker Compose, MySQ
 
 ## Guía 2 — MySQL en Aiven
 
-En progreso. El usuario creó una cuenta Aiven, pero la captura disponible muestra un servicio **PostgreSQL 18** en construcción. Falta crear **MySQL Free**, esperar `Running`, crear `crud_usuarios`, cargar la tabla y validar la conexión y el CRUD remoto. Las instrucciones y la configuración privada están en `docs/AIVEN_SETUP.md`.
+En progreso. La primera captura mostraba un servicio **PostgreSQL 18**, incompatible con este proyecto. El usuario ahora creó **MySQL** y confirmó que está en estado `Building`; todavía no se ha confirmado el plan Free ni el estado `Running`. Falta crear `crud_usuarios`, cargar la tabla y validar la conexión y el CRUD remoto. Las instrucciones y la configuración privada están en `docs/AIVEN_SETUP.md`.
 
 ## Guía 3 — preparación hasta la mitad acordada
 
