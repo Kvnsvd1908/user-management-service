@@ -7,6 +7,7 @@ import com.jcaa.usersmanagement.domain.model.UserModel;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +34,14 @@ public class EmailNotificationService {
 
   private final EmailSenderPort emailSenderPort;
 
+  @Value("${notifications.email.enabled:true}")
+  private boolean enabled = true;
+
   @Async("notificationExecutor")
   public void notifyUserCreated(final UserModel user) {
+    if (!enabled) {
+      return;
+    }
     final String template = loadTemplate("user-created.html");
     final String body =
         renderTemplate(
@@ -49,6 +56,9 @@ public class EmailNotificationService {
 
   @Async("notificationExecutor")
   public void notifyUserUpdated(final UserModel user) {
+    if (!enabled) {
+      return;
+    }
     final String template = loadTemplate("user-updated.html");
     final String body =
         renderTemplate(

@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * Tests para EmailNotificationService.
@@ -96,6 +97,17 @@ class EmailNotificationServiceTest {
                 dest ->
                     EMAIL.equals(dest.getDestinationEmail())
                         && dest.getSubject().contains("actualizada")));
+  }
+
+  @Test
+  @DisplayName("Las notificaciones desactivadas no intentan enviar correo")
+  void shouldSkipEmailWhenNotificationsAreDisabled() {
+    ReflectionTestUtils.setField(service, "enabled", false);
+
+    service.notifyUserCreated(user);
+    service.notifyUserUpdated(user);
+
+    verifyNoInteractions(emailSenderPort);
   }
 
   // ── re-lanzar EmailSenderException en notifyUserCreated

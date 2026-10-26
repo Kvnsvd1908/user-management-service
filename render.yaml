@@ -19,18 +19,8 @@ services:
         sync: false
       - key: DB_SSL_MODE
         value: REQUIRED
-      - key: SMTP_HOST
-        sync: false
-      - key: SMTP_PORT
-        sync: false
-      - key: SMTP_USERNAME
-        sync: false
-      - key: SMTP_PASSWORD
-        sync: false
-      - key: SMTP_FROM_ADDRESS
-        sync: false
-      - key: SMTP_FROM_NAME
-        value: Gestion de Usuarios
+      - key: NOTIFICATIONS_EMAIL_ENABLED
+        value: "false"
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_EXPIRATION_SECONDS
