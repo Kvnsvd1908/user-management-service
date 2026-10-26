@@ -10,7 +10,7 @@ Completada y validada en Windows con JDK 17, Maven Wrapper, Docker Compose, MySQ
 
 ## Guía 2 — MySQL en Aiven
 
-En progreso. La primera captura mostraba un servicio **PostgreSQL 18**, incompatible con este proyecto. El usuario ahora creó **MySQL** y confirmó que está en estado `Building`; todavía no se ha confirmado el plan Free ni el estado `Running`. Falta crear `crud_usuarios`, cargar la tabla y validar la conexión y el CRUD remoto. Las instrucciones y la configuración privada están en `docs/AIVEN_SETUP.md`.
+En progreso. La primera captura mostraba un servicio **PostgreSQL 18**, incompatible con este proyecto. El usuario luego creó **MySQL**, inicialmente en `Building`, y ahora indica que está listo; plan y estado `Running` aún no se han observado directamente. Una captura posterior mostró accidentalmente la contraseña completa de `avnadmin`; debe rotarse antes de usar el servicio. Host, puerto y usuario se guardaron en el archivo privado ignorado por Git, pero el campo de contraseña quedó vacío. No se ha intentado conectar con la clave expuesta. Falta completar la nueva configuración privada, inicializar `crud_usuarios.users` y validar la conexión y el CRUD remoto. Las instrucciones están en `docs/AIVEN_SETUP.md`.
 
 ## Guía 3 — preparación hasta la mitad acordada
 

@@ -3,9 +3,8 @@
 El proyecto utiliza MySQL Connector/J y SQL específico de MySQL (`ENUM`, `ON UPDATE CURRENT_TIMESTAMP`). Un servicio PostgreSQL no sirve para esta etapa.
 
 1. En Aiven, abre tu proyecto y ve a **Services → Create service → MySQL → Free → Create service**. Comprueba que el resumen indique **Free ($0/mes)** antes de confirmar. Espera al estado **Running**.
-2. En el servicio MySQL, abre **Connect → Databases → Create database** y crea `crud_usuarios`.
-3. En **Overview → Connection information**, localiza host, puerto, usuario y contraseña. No pegues la contraseña en chats, capturas, tickets ni archivos versionados. En un cliente como MySQL Workbench usa esos valores y descarga el certificado CA de Aiven para la configuración SSL del cliente.
-4. Crea la carpeta privada `.environments` dentro del repositorio y el archivo `.environments/aiven.env` con este formato. Está excluido por `.gitignore` y `.dockerignore`:
+2. En **Overview → Connection information**, localiza host, puerto, usuario y contraseña. No pegues la contraseña en chats, capturas, tickets ni archivos versionados.
+3. Completa el archivo privado `.environments/aiven.env` con este formato. Está excluido por `.gitignore` y `.dockerignore`:
 
    ```dotenv
    DB_HOST=host-del-servicio-mysql
@@ -16,7 +15,10 @@ El proyecto utiliza MySQL Connector/J y SQL específico de MySQL (`ENUM`, `ON UP
    DB_SSL_MODE=REQUIRED
    ```
 
-5. En Workbench, selecciona `crud_usuarios` y ejecuta únicamente el bloque `CREATE TABLE IF NOT EXISTS users` de `src/main/resources/schema.sql`. La base ya se creó en Aiven; no hace falta repetir `CREATE DATABASE`/`USE`. Comprueba `SHOW TABLES` y `DESCRIBE users`.
+4. En PowerShell ejecuta `./scripts/Initialize-Aiven.ps1`. Usa el cliente MySQL de Docker, exige TLS y ejecuta el `schema.sql` idempotente (`CREATE DATABASE IF NOT EXISTS` y `CREATE TABLE IF NOT EXISTS`). Comprueba que `users` tenga las ocho columnas esperadas; no borra datos. No imprime la contraseña.
+
+   Si una contraseña aparece por accidente en una captura o chat, restablécela en Aiven antes de ejecutar este paso. El archivo privado debe contener únicamente la contraseña nueva.
+5. Si deseas revisar la tabla visualmente, conecta MySQL Workbench con los mismos valores. Descarga el certificado CA de Aiven para la configuración SSL del cliente y consulta `SHOW TABLES`/`DESCRIBE users`.
 6. Con JDK 17 activo, inicia la API desde PowerShell con `./scripts/Start-Aiven.ps1`. Usa `http://127.0.0.1:8080/swagger-ui/index.html` y `docs/API_TESTING.http` para verificar los endpoints. El correo de desarrollo llega a Mailpit en `http://127.0.0.1:8025`.
 7. Para volver a MySQL local, detén la API con Ctrl+C y ejecuta `./scripts/Start-Local.ps1`. El volumen local de Docker se conserva.
 
